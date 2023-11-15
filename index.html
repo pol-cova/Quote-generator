@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>QuoteGenerator</title>
+</head>
+<body>
+    <div class="container">
+        <div class="quote-box" id="quote-box">
+            <p id="text"></p>
+            <p id="author"></p>
+            <a id="tweet-quote" href="twitter.com/intent/tweet" target="_blank"><i class="fa fa-twitter"></i></a>
+            <button type="button" id="new-quote" onclick="handleNewQuote()">New quote</button>
+        </div>
+    </div>
+    <script>
+        const useState = (initialValue) => {
+            let value = initialValue;
+
+            const getValue = () => value;
+
+            const setValue = (newValue) => {
+                value = newValue;
+                render();
+            };
+
+            return [getValue, setValue];
+        };
+
+        const useEffect = (callback, dependencies) => {
+            // For simplicity, assuming useEffect always runs on component mount
+            callback();
+        };
+
+        // Initial state
+        const [getQuoteData, setQuoteData] = useState({ author: '', content: '' });
+
+        // Event handler for the button click
+        const handleNewQuote = () => {
+            fetchQuote();
+        };
+
+        // Function to fetch a new quote
+        const fetchQuote = async () => {
+            try {
+                const response = await fetch('https://api.quotable.io/random');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch quote');
+                }
+                const data = await response.json();
+                setQuoteData({
+                    author: data.author,
+                    content: data.content
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        // Effect to fetch data on component mount
+        useEffect(() => {
+            fetchQuote();
+        }, []);
+
+        // Render function to update the HTML content
+        const render = () => {
+            document.getElementById('author').textContent = getQuoteData().author;
+            document.getElementById('text').textContent = getQuoteData().content;
+        };
+
+        // Initial render
+        render();
+    </script>
+
+</body>
+</html>
